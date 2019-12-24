@@ -5,6 +5,14 @@ pub struct Board {
     last_movement: Movement
 }
 
+
+impl std::fmt::Display for Board {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        let str: String = self.mat.iter().flat_map(|l| l.iter().chain(['\n'].iter())).collect();
+        write!(f, "{}", str)
+    }
+}
+
 impl Board {
     pub fn initialise_board() -> Board {
         Board::from_str("tcfrdfctpppppppp                                PPPPPPPPTCFDRFCT")
@@ -33,6 +41,7 @@ impl Board {
         let (bx,by) = mov.after;
         let pa = self.mat[ay][ax];
         let pb = self.mat[by][bx];
+        let dir = mov.dir();
         if pa == ' ' { 
             println!("Try to move empty square!"); return false; 
         }
@@ -43,7 +52,8 @@ impl Board {
             println!("Try to arrive on friend piece!");
         }
         match pa {
-            'p' | 'P' => false, //TODO handle movement
+            'p' => (dir == (0,1) && pb == ' ') || ((dir == (1,1) || dir == (-1,1)) && pb != ' ') ,
+            'P' => (dir == (0,-1) && pb == ' ') || ((dir == (1,-1) || dir == (-1,-1)) && pb != ' ') ,
             ' ' => { println!("Cannot move empty square!"); false }
             _ => panic!("Unrecognised character while checking movement!")
         }

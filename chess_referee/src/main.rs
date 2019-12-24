@@ -25,6 +25,8 @@ fn main() {
 
     loop {
         player_action(&mut p1, &mut board);
+        println!("{}", &board);
         player_action(&mut p2, &mut board);
+        println!("{}", &board);
     }
 }

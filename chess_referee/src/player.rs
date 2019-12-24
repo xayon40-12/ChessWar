@@ -1,4 +1,4 @@
-use std::process::{Command,Child,ChildStdin,ChildStdout};
+use std::process::{Command,Stdio,Child};
 use std::io::{Write,Read};
 use crate::{Board,Movement};
 
@@ -11,18 +11,18 @@ pub struct Player {
 
 impl Player {
     pub fn new(name: &str, colour: char) -> Player {
-        let prog = Command::new(name).spawn().expect(&format!("Cannot start: {}.", name));
+        let prog = Command::new(name).stdin(Stdio::piped()).stdout(Stdio::piped()).spawn().expect(&format!("Cannot start: {}.", name));
         let name = name.to_string();
         Player { name, colour, prog, rock: 1}
     }
 
     pub fn next_move(&mut self, board: &Board) -> Movement {
-        let mut pin = self.prog.stdin.as_mut().expect(&format!("Cannot communicate with: {}.", &self.name));
+        let pin = self.prog.stdin.as_mut().expect(&format!("Cannot communicate with: {}.", &self.name));
         write!(pin, "{} {}\n{}", self.colour, self.rock, board.to_contiguous()).expect(&format!("Cannot communicate with: {}.", &self.name));
 
-        let mut pout = self.prog.stdout.as_mut().expect(&format!("Cannot communicate with: {}.", &self.name));
+        let pout = self.prog.stdout.as_mut().expect(&format!("Cannot communicate with: {}.", &self.name));
         let mut coord = [0u8; 4];
-        pout.read_exact(&mut coord);
+        pout.read_exact(&mut coord).expect(&format!("Could not read player {} input", &self.name));
         Movement::from(coord)
     }
 
