@@ -1,6 +1,6 @@
 use std::process::{Command,Child,ChildStdin,ChildStdout};
 use std::io::{Write,Read};
-use crate::board::{Board,Movement};
+use crate::{Board,Movement};
 
 pub struct Player {
     name: String,
@@ -28,6 +28,10 @@ impl Player {
 
     pub fn get_name(&self) -> String {
         self.name.clone()
+    }
+
+    pub fn is_white(&self) -> bool {
+        self.colour == 'b'
     }
 }
 

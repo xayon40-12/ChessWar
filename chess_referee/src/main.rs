@@ -12,7 +12,7 @@ fn initialise_players() -> (Player,Player) {
 
 fn player_action(p: &mut Player, board: &mut Board) {
     let m = p.next_move(&board);
-    if board.apply_movement(m) {
+    if board.apply_movement(m, p.is_white()) {
         println!("Player {} has made a mistake!", p.get_name());
         std::process::exit(0);
     }

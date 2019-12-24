@@ -1,18 +1,8 @@
+use crate::Movement;
+
 pub struct Board {
-    mat: [[char; 8]; 8]
-}
-
-pub struct Movement {
-    before: (usize,usize),
-    after: (usize,usize)
-}
-
-impl From<[u8; 4]> for Movement {
-    fn from(coord: [u8; 4]) -> Self {
-        let before = ((coord[0]-'a' as u8) as usize, (8-coord[1]) as usize);
-        let after = ((coord[2]-'a' as u8) as usize, (8-coord[3]) as usize);
-        Movement { before, after }
-    }
+    mat: [[char; 8]; 8],
+    last_movement: Movement
 }
 
 impl Board {
@@ -31,17 +21,46 @@ impl Board {
             } 
         }
 
-        Board { mat }
+        Board { mat, last_movement: Movement { before: (0,0), after: (0,0) } }
     }
 
     pub fn to_contiguous(&self) -> String {
        self.mat.iter().flat_map(|l| l.iter()).collect()
     }
 
-    // try to apply the movement and return true if possible, false if wrong
-    pub fn apply_movement(&mut self, mov: Movement) -> bool {
-        
+    pub fn check_movement(&self, mov: &Movement, is_white: bool) -> bool {
+        let (ax,ay) = mov.before;
+        let (bx,by) = mov.after;
+        let pa = self.mat[ay][ax];
+        let pb = self.mat[by][bx];
+        if pa == ' ' { 
+            println!("Try to move empty square!"); return false; 
+        }
+        if (is_white && ('A'..='Z').contains(&pa)) || (!is_white && ('a'..='z').contains(&pa)) {
+            println!("Try to move opponent piece!"); return false;
+        }
+        if (is_white && ('a'..='z').contains(&pb)) || (!is_white && ('A'..='Z').contains(&pb)) {
+            println!("Try to arrive on friend piece!");
+        }
+        match pa {
+            'p' | 'P' => false, //TODO handle movement
+            ' ' => { println!("Cannot move empty square!"); false }
+            _ => panic!("Unrecognised character while checking movement!")
+        }
+    }
 
-        false
+    // try to apply the movement and return true if possible, false if wrong
+    pub fn apply_movement(&mut self, mov: Movement, is_white: bool) -> bool {
+        if self.check_movement(&mov, is_white) {
+            self.mat[mov.after.1][mov.after.0] = self.mat[mov.before.1][mov.before.0];
+            self.mat[mov.before.1][mov.before.0] = ' ';
+            self.last_movement = mov;
+
+            true
+        } else {
+            self.last_movement = mov;
+
+            false
+        }
     }
 }
