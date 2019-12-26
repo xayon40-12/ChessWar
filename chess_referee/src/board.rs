@@ -1,4 +1,5 @@
 use crate::Movement;
+use colored::*;
 
 pub struct Board {
     mat: [[char; 8]; 8],
@@ -71,6 +72,17 @@ impl Board {
             self.last_movement = mov;
 
             false
+        }
+    }
+
+    pub fn show(&self) {
+        for y in 0..8 {
+            for x in 0..8 {
+                let s = self.mat[y][x].to_string().red();
+                let s = if (x+y)%2 == 0 { s.on_white() } else { s.on_black() };
+                print!("{}", s);
+            }
+            println!("");
         }
     }
 }

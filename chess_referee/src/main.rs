@@ -12,6 +12,7 @@ fn initialise_players() -> (Player,Player) {
 
 fn player_action(p1: &mut Player, p2: &mut Player, board: &mut Board) {
     let m = p1.next_move(&board);
+    board.show();
     if !board.apply_movement(m, p1.is_white()) {
         println!("Player {} has made a mistake!", p1.get_name());
         p1.kill();
