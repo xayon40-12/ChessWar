@@ -3,6 +3,7 @@ a referee program and AI for fight between chess AI
 
 ## Board
 
+```
 8  |t|c|f|r|d|f|c|t|   blanc  
 7  |p|p|p|p|p|p|p|p|  
 6  | | | | | | | | |  
@@ -13,17 +14,18 @@ a referee program and AI for fight between chess AI
 1  |T|C|F|R|D|F|C|T|   noir  
 
     A B C D E F G H
+```
 
-espace: vide
-p: pion
-t: tour
-c: cavalier
-f: fou
-r: roi
-d: dame
+espace: vide  
+p: pion  
+t: tour  
+c: cavalier  
+f: fou  
+r: roi  
+d: dame  
 
-blanc: minuscules
-noir: majuscules
+blanc: minuscules  
+noir: majuscules  
 
 ## program I/O
 Notation: entre [ ] les caracteres au choix (ex: [ab] correspond à a ou b).
