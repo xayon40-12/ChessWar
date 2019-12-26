@@ -1,6 +1,7 @@
 fn get() -> String {
     let mut line = String::new();
     std::io::stdin().read_line(&mut line).unwrap();
+
     line.trim().into()
 }
 
@@ -29,6 +30,7 @@ fn print_move(before: (u8,u8), after: (u8,u8)) {
 
 fn main() {
     loop {
+        
         let (colour,_rock) = get_info();
         let mut _board = get_board();
         let (before,after) = match colour {
