@@ -50,11 +50,11 @@ impl Board {
        self.mat.iter().flat_map(|l| l.iter()).collect()
     }
 
-    pub fn check_movement(&self, mov: &Movement, is_white: bool) -> bool {
+    pub fn check_movement(mat: &[[char; 8]; 8], mov: &Movement, is_white: bool) -> bool {
         let (ax,ay) = mov.before;
         let (bx,by) = mov.after;
-        let pa = self.mat[ay][ax];
-        let pb = self.mat[by][bx];
+        let pa = mat[ay][ax];
+        let pb = mat[by][bx];
         let (dir,udir) = (mov.dir(),mov.udir());
         if mov.before == mov.after {
             println!("No movement done!"); return false;
@@ -69,7 +69,7 @@ impl Board {
             println!("Try to arrive on friend piece!");
         }
 
-        let prop = |n| (0..n).fold(((ax as i8,ay as i8),true), |(p,r),_| ((p.0+udir.0,p.1+udir.1),self.mat[p.1 as usize][p.0 as usize] == ' ' && r)).1;
+        let prop = |n| (0..n).fold(((ax as i8,ay as i8),true), |(p,r),_| ((p.0+udir.0,p.1+udir.1),mat[p.1 as usize][p.0 as usize] == ' ' && r)).1;
         let rock = || false; //TODO
         match pa {
             'p' => (dir == (0,1) && pb == ' ') || ((dir == (1,1) || dir == (-1,1)) && pb != ' ') ,
@@ -86,7 +86,7 @@ impl Board {
 
     // try to apply the movement and return true if possible, false if wrong
     pub fn apply_movement(&mut self, mov: Movement, is_white: bool) -> bool {
-        if self.check_movement(&mov, is_white) {
+        if Board::check_movement(&self.mat, &mov, is_white) {
             self.mat[mov.after.1][mov.after.0] = self.mat[mov.before.1][mov.before.0];
             self.mat[mov.before.1][mov.before.0] = ' ';
             self.last_movement = mov;
@@ -97,6 +97,36 @@ impl Board {
 
             false
         }
+    }
+
+    pub fn targetable(&self, (x,y): (usize,usize)) -> bool {
+        let pa = self.mat[y][x];
+        if pa == ' ' { return true; }
+        let white = ('a'..='z').contains(&pa);
+        for j in 0..8 {
+            for i in 0..8 {
+                if white != ('a'..='z').contains(&self.mat[j][i]) && self.mat[j][i] != ' ' {
+                    if Board::check_movement(&self.mat, &Movement { before: (x,y), after: (i,j) }, white) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        false
+    }
+
+    pub fn check(&self) -> bool {
+        let r = if self.p[self.i].is_white() { 'r' } else { 'R' };
+        for j in 0..8 {
+            for i in 0..8 {
+                if self.mat[j][i] == r {                        
+                    return self.targetable((i,j));             
+                }
+            }
+        }
+        
+        true
     }
 
     pub fn turn(&mut self) {
