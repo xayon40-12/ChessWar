@@ -1,4 +1,4 @@
-
+#[derive(Debug)]
 pub struct Movement {
     pub before: (usize,usize),
     pub after: (usize,usize),

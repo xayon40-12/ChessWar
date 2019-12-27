@@ -1,6 +1,6 @@
 use std::process::{Command,Stdio,Child};
 use std::io::{Write,BufReader,BufRead};
-use crate::{Board,Movement};
+use crate::Movement;
 
 pub struct Player {
     name: String,
@@ -16,9 +16,9 @@ impl Player {
         Player { name, colour, prog, rock: 1}
     }
 
-    pub fn next_move(&mut self, board: &Board) -> Movement {
+    pub fn next_move(&mut self, contiguous_board: String) -> Movement {
         let pin = self.prog.stdin.as_mut().expect(&format!("Cannot communicate with: {}.", &self.name));
-        write!(pin, "{} {}\n{}\n", self.colour, self.rock, board.to_contiguous()).expect(&format!("Cannot communicate with: {}.", &self.name));
+        write!(pin, "{} {}\n{}\n", self.colour, self.rock, contiguous_board).expect(&format!("Cannot communicate with: {}.", &self.name));
 
         let mut pout = BufReader::new(self.prog.stdout.as_mut().expect(&format!("Cannot communicate with: {}.", &self.name)));
         let mut line = String::new();
