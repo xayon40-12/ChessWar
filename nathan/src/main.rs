@@ -13,7 +13,7 @@ enum Colour {
 fn get_info() -> (Colour, bool) {
     let line = get();
     let v = line.split(" ").collect::<Vec<_>>();
-    (if v[0] == "n" { Colour::Blanc } else { Colour::Noir }, if v[1] == "1" { true } else { false })
+    (if v[0] == "b" { Colour::Blanc } else { Colour::Noir }, if v[1] == "1" { true } else { false })
 }
 
 fn get_board() -> [[char; 8]; 8] {
