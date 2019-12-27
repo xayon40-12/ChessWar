@@ -8,6 +8,11 @@ impl Movement {
     pub fn dir(&self) -> (i8,i8) {
         (self.after.0 as i8 - self.before.0 as i8, self.after.1 as i8 - self.before.1 as i8)
     }
+
+    pub fn udir(&self) -> (i8,i8) {
+        let (x,y) = self.dir();
+        (x.signum(),y.signum())
+    }
 }
 
 impl From<String> for Movement {

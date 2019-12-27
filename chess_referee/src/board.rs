@@ -55,7 +55,10 @@ impl Board {
         let (bx,by) = mov.after;
         let pa = self.mat[ay][ax];
         let pb = self.mat[by][bx];
-        let dir = mov.dir();
+        let (dir,udir) = (mov.dir(),mov.udir());
+        if mov.before == mov.after {
+            println!("No movement done!"); return false;
+        }
         if pa == ' ' { 
             println!("Try to move empty square!"); return false; 
         }
@@ -65,10 +68,18 @@ impl Board {
         if (is_white && ('a'..='z').contains(&pb)) || (!is_white && ('A'..='Z').contains(&pb)) {
             println!("Try to arrive on friend piece!");
         }
+
+        let prop = |n| (0..n).fold(((ax as i8,ay as i8),true), |(p,r),_| ((p.0+udir.0,p.1+udir.1),self.mat[p.1 as usize][p.0 as usize] == ' ' && r)).1;
+        let rock = || false; //TODO
         match pa {
             'p' => (dir == (0,1) && pb == ' ') || ((dir == (1,1) || dir == (-1,1)) && pb != ' ') ,
             'P' => (dir == (0,-1) && pb == ' ') || ((dir == (1,-1) || dir == (-1,-1)) && pb != ' ') ,
-            ' ' => { println!("Cannot move empty square!"); false }
+            't' | 'T' => udir.0.abs()+udir.1.abs() == 1 && prop(dir.0.abs()+dir.1.abs()),
+            'f' | 'F' => dir.0.abs() == dir.1.abs() && prop(dir.0.abs()),
+            'd' | 'D' => (dir.0.abs() == dir.1.abs() && prop(dir.0.abs())) || (udir.0.abs()+udir.1.abs() == 1 && prop(dir.0.abs()+dir.1.abs())),
+            'r' | 'R' => dir == udir || rock(),
+            'c' | 'C' => dir.0.abs()*dir.1.abs() == 2,
+            ' ' =>  false,
             _ => panic!("Unrecognised character while checking movement!")
         }
     }
@@ -106,7 +117,7 @@ impl Board {
         println!("{}'s turn:", self.p[self.i].get_name());
         for y in 0..8 {
             for x in 0..8 {
-                let c = if self.last_movement.after == (x,y) { "green" } else { if (x+y)%2 == 0 { "black" } else { "white" } };
+                let c = if self.last_movement.after == (x,y) && !mistake { "green" } else { if (x+y)%2 == 0 { "black" } else { "white" } };
                 let on_c = if self.last_movement.before == (x,y) { "green" } else { 
                     if mistake && self.last_movement.after == (x,y) { "red" } else { if (x+y)%2 == 0 { "white" } else { "black" } } 
                 };
