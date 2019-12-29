@@ -13,7 +13,7 @@ impl Player {
     pub fn new(name: &str, colour: char) -> Player {
         let prog = Command::new(name).stdin(Stdio::piped()).stdout(Stdio::piped()).spawn().expect(&format!("Cannot start: {}.", name));
         let name = name.to_string();
-        Player { name, colour, prog, rock: 1}
+        Player { name, colour, prog, rock: 0} // TODO put rock to 1 and handle rock
     }
 
     pub fn next_move(&mut self, contiguous_board: String) -> Movement {
