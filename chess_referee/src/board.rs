@@ -80,14 +80,14 @@ impl Board {
             let targeting = chess::check(&self.mat, !self.p[i].is_white());
             self.show(false, &targeting);
             end = true;
-        } else {
-            self.show(false, &[]);
         }
 
         if end {
             self.p[i].kill();
             self.p[j].kill();
             std::process::exit(0);
+        } else {
+            self.show(false, &[]);
         }
 
         self.i = 1-i;

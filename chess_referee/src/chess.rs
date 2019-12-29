@@ -1,7 +1,7 @@
 use crate::Movement;
 
-pub const white_pieces: [char; 6] = ['p','t','c','f','r','d'];
-pub const black_pieces: [char; 6] = ['P','T','C','F','R','D'];
+pub const WHITE_PIECES: [char; 6] = ['p','t','c','f','r','d'];
+pub const BLACK_PIECES: [char; 6] = ['P','T','C','F','R','D'];
 
 pub fn check_movement(mat: &[[char; 8]; 8], mov: &Movement) -> bool {
     let (ax,ay) = mov.before;
@@ -35,10 +35,10 @@ pub fn check_player_movement(mat: &[[char; 8]; 8], mov: &Movement, is_white: boo
     let (bx,by) = mov.after;
     let pa = mat[ay][ax];
     let pb = mat[by][bx]; 
-    if (is_white && black_pieces.contains(&pa)) || (!is_white && white_pieces.contains(&pa)) {
+    if (is_white && BLACK_PIECES.contains(&pa)) || (!is_white && WHITE_PIECES.contains(&pa)) {
         println!("Try to move opponent piece!"); return false;
     }
-    if (is_white && white_pieces.contains(&pb)) || (!is_white && black_pieces.contains(&pb)) {
+    if (is_white && WHITE_PIECES.contains(&pb)) || (!is_white && BLACK_PIECES.contains(&pb)) {
         println!("Try to arrive on friend piece!"); return false;
     }
 
@@ -69,8 +69,8 @@ pub fn targetable(mat: &[[char; 8]; 8], (x,y): (usize,usize)) -> Vec<(usize,usiz
     let pa = mat[y][x];
     let pieces = 
         if pa == ' '                              { find(mat, &[]) } 
-        else if white_pieces.contains(&pa) { find(mat, &black_pieces) } 
-        else                                      { find(mat, &white_pieces) };
+        else if WHITE_PIECES.contains(&pa) { find(mat, &BLACK_PIECES) } 
+        else                                      { find(mat, &WHITE_PIECES) };
     pieces.into_iter().filter(|p| check_movement(mat, &Movement { before: (x,y), after: *p })).collect()
 }
 
@@ -79,14 +79,14 @@ pub fn check(mat: &[[char; 8]; 8], is_white: bool) -> Vec<(usize,usize)> {
     targetable(mat, p)
 }
 
-pub fn pat(mat: &[[char; 8]; 8]) -> bool {
+pub fn pat(_mat: &[[char; 8]; 8]) -> bool {
     false //TODO
 }
 
 pub fn checkmate(mat: &[[char; 8]; 8], is_white: bool) -> bool {
     if check(mat, is_white).len() == 0 { return false }
 
-    let friends = find(mat, if is_white { &white_pieces } else { &black_pieces });
+    let friends = find(mat, if is_white { &WHITE_PIECES } else { &BLACK_PIECES });
     for p in friends {
         for j in 0..8 {
             for i in 0..8 {
