@@ -25,3 +25,19 @@ impl From<String> for Movement {
         Movement { before, after }
     }
 }
+
+impl From<&Movement> for String {
+    fn from(mov: &Movement) -> Self {
+        let a = 'a' as u8;
+        format!("{}{}{}{}", (mov.before.0 as u8 + a) as char, 8-mov.before.1,  (mov.after.0 as u8 + a) as char, 8-mov.after.1)
+    }
+}
+
+impl std::fmt::Display for Movement {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        let str: String = self.into();
+        write!(f, "{}", str)
+    }
+}
+
+
