@@ -31,14 +31,14 @@ fn rnd(len: usize) -> Vec<usize> {
 }
 
 fn main() {
+
     'l: loop {
         let (white,_rock) = get_info();
         let board = get_board();
         let pieces = chess::find(&board, if white { &chess::WHITE_PIECES } else { &chess::BLACK_PIECES });
-        let indicies = rnd(pieces.len()).into_iter().map(|i| pieces[i]);
-        for before in indicies {
-            'a: for after in (0..8).zip(0..8) {
-                    if before == after { continue'a; }
+        for before in rnd(pieces.len()).into_iter().map(|i| pieces[i]) {
+            for after in rnd(8*8).into_iter().map(|i| (i%8,i/8)) {
+                    if before == after { continue; }
 
                     let mov = Movement { before, after };
                     if chess::check_movement(&board, &mov) {
