@@ -49,30 +49,35 @@ impl Board {
    
     // try to apply the movement and return true if possible, false if wrong
     pub fn apply_movement(&mut self, mov: Movement, is_white: bool) -> bool {
-        if chess::check_player_movement(&self.mat, &mov, is_white) {
-            self.mat[mov.after.1][mov.after.0] = self.mat[mov.before.1][mov.before.0];
-            self.mat[mov.before.1][mov.before.0] = ' ';
-            self.last_movement = mov;
-            true
-        } else {
-            self.last_movement = mov;
-            false
+        match chess::check_player_movement(&self.mat, &mov, is_white) {
+            Ok(_) => {
+                self.mat[mov.after.1][mov.after.0] = self.mat[mov.before.1][mov.before.0];
+                self.mat[mov.before.1][mov.before.0] = ' ';
+                self.last_movement = mov;
+                true
+            },
+            Err(e) => {
+                println!("{}", e);
+                self.last_movement = mov;
+                false
+            }
         }
     }
 
     pub fn turn(&mut self) {
+        println!("{}'s turn:", self.p[self.i].get_name());
         let mut end = false;
         let (i,j) = (self.i,1-self.i);
         let m = self.p[i].next_move(self.to_contiguous());
         if !self.apply_movement(m, self.p[i].is_white()) {
-            println!("Player {} has made a mistake!", self.p[i].get_name());
             self.show(true, &[]);
+            println!("Player {} has made a mistake!", self.p[i].get_name());
             end = true;
         }
         let targeting = chess::check(&self.mat, self.p[i].is_white());
         if targeting.len() > 0 {
-            println!("Player {} has suicided itself!", self.p[i].get_name());
             self.show(true, &targeting);
+            println!("Player {} has suicided itself!", self.p[i].get_name());
             end = true;
         }
             
@@ -98,7 +103,6 @@ impl Board {
     }
 
     pub fn show(&self, mistake: bool, targeting: &[(usize,usize)]) {
-        println!("{}'s turn:", self.p[self.i].get_name());
         for y in 0..8 {
             for x in 0..8 {
                 let c = if self.last_movement.after == (x,y) && !mistake { "green" } else { if (x+y)%2 == 0 { "black" } else { "white" } };
@@ -106,7 +110,22 @@ impl Board {
                     if self.last_movement.before == (x,y) { "green" } else { 
                     if mistake && self.last_movement.after == (x,y) { "red" } else { if (x+y)%2 == 0 { "white" } else { "black" } } 
                 }};
-                let s = self.mat[y][x].to_string().color(c).on_color(on_c);
+                let s = /*match self.mat[y][x] {
+                    'p' => "\u{2659}",
+                    't' => "\u{2656}",
+                    'c' => "\u{2658}",
+                    'f' => "\u{2657}",
+                    'r' => "\u{2654}",
+                    'd' => "\u{2655}",
+                    'P' => "\u{265F}",
+                    'T' => "\u{265C}",
+                    'C' => "\u{265E}",
+                    'F' => "\u{265D}",
+                    'R' => "\u{265A}",
+                    'D' => "\u{265B}",
+                    ' ' => " ",
+                    _ => panic!("Unrecognised character!")
+                };*/self.mat[y][x].to_string().color(c).on_color(on_c);
 
                 print!("{}", s);
             }
