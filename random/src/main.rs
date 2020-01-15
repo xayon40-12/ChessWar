@@ -1,4 +1,5 @@
 use chess_referee::{chess,Movement};
+use rand::seq::SliceRandom;
 
 fn get() -> String {
     let mut line = String::new();
@@ -21,27 +22,21 @@ fn get_board() -> [[char; 8]; 8] {
 }
 
 fn rnd(len: usize) -> Vec<usize> {
-    let mut r = Vec::new();
-    while r.len() != len {
-        let rand = rand::random::<usize>()%len;
-        if !r.contains(&rand) { r.push(rand) }
-    }
+    let mut r: Vec<usize> = (0..len).collect();
+    r.shuffle(&mut rand::thread_rng());
 
     r
 }
 
 fn main() {
-
     'l: loop {
         let (white,_rock) = get_info();
         let board = get_board();
         let pieces = chess::find(&board, if white { &chess::WHITE_PIECES } else { &chess::BLACK_PIECES });
         for before in rnd(pieces.len()).into_iter().map(|i| pieces[i]) {
             for after in rnd(8*8).into_iter().map(|i| (i%8,i/8)) {
-                    if before == after { continue; }
-
                     let mov = Movement { before, after };
-                    if chess::check_movement(&board, &mov) {
+                    if chess::check_movement(&board, &mov).is_ok() {
                         println!("{}", &mov);
                         continue'l;
                     }
